@@ -1,7 +1,6 @@
 from diffusers import DDPMScheduler
 import torch
-import tqdm
-
+from tqdm import tqdm
 def repaint(
     pipeline,
     corrupted_img: torch.Tensor,

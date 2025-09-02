@@ -47,7 +47,7 @@ def dps(
     psnr_history = []
     
     # Main DPS-DDPM loop
-    for i, t in enumerate(tqdm(time_steps, desc="DPS-DDPM with SURE")):
+    for i, t in enumerate(tqdm(time_steps, desc="DPS")):
         xt = x.detach()
         
         at = alphas_cumprod[t]

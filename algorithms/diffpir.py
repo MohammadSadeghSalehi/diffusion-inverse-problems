@@ -7,10 +7,10 @@ def diffpir(
     A: callable,
     A_pinv: callable,
     sigma_n: float,
-    lambda_param: float = 6.0,
+    lambda_param: float = 7.0,
     zeta: float = 0.5,
     num_inference_steps=50,
-    prox_iter=10,  # Number of iterations for the proximal subproblem (needs tuning)
+    prox_iter=20,  # Number of iterations for the proximal subproblem (needs tuning)
     prox_stepsize=0.1, # Step size for proximal gradient descent (needs tuning)
     random_init=True
 ):
