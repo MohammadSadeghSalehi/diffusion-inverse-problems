@@ -4,14 +4,15 @@ This repository provides **implementations of state-of-the-art diffusion-based m
 
 <p align="center">
   <img src="notebooks/inpainting_gt_corrupted.png" alt="Ground Truth" width="400" style="display:inline-block; margin:10px;"/>
-  <img src="notebooks/inpainting_reconstructed_diffpir.png" alt="DiffPIR" width="200" style="display:inline-block; margin:10px;"/>
-  <img src="notebooks/inpainting_reconstructed_dps.png" alt="DPS" width="200" style="display:inline-block; margin:10px;"/>
+  <img src="notebooks/inpainting_reconstructed_diffpir.png" alt="DiffPIR" width="150" style="display:inline-block; margin:10px;"/>
+  <img src="notebooks/inpainting_reconstructed_dps.png" alt="DPS" width="150" style="display:inline-block; margin:10px;"/>
 </p>
 
 <p align="center">
   <img src="notebooks/CT_gt_corrupted.png" alt="Ground Truth" width="300" style="display:inline-block; margin:10px;"/>
   <img src="notebooks/CT_reconstructed.png" alt="DiffPIR-DDRM" width="300" style="display:inline-block; margin:10px;"/>
 </p>
+
 ---
 
 ## ✨ Highlights
