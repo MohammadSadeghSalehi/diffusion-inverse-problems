@@ -1,9 +1,9 @@
 from diffusers import DDIMScheduler, DDIMPipeline, DDPMScheduler, DDPMPipeline
 import matplotlib.pyplot as plt
 import torch 
-import tqdm
+from tqdm import tqdm
 
-def dps_ddpm_with_sure(
+def dps(
     pipeline,
     y: torch.Tensor,
     A: callable,

@@ -1,6 +1,6 @@
 from diffusers import DDIMScheduler, DDIMPipeline, DDPMScheduler, DDPMPipeline
 import torch
-import tqdm
+from tqdm import tqdm
 
 def ddrm_ddim(
     pipeline: DDIMPipeline,

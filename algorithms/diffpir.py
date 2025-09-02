@@ -1,7 +1,6 @@
 from diffusers import DDIMScheduler, DDIMPipeline
 import torch
-import tqdm
-
+from tqdm import tqdm
 def diffpir(
     pipeline,
     y: torch.Tensor,
@@ -38,7 +37,7 @@ def diffpir(
             eps_pred = unet(x, t_tensor).sample
 
         alpha_bar_t = scheduler.alphas_cumprod[t]
-        alpha_bar_t_tensor = torch.tensor(alpha_bar_t, device=device)
+        alpha_bar_t_tensor = alpha_bar_t.clone().detach().to(device)
         sqrt_alpha_bar_t = torch.sqrt(alpha_bar_t_tensor)
         sqrt_one_minus_alpha_bar_t = torch.sqrt(1.0 - alpha_bar_t_tensor)
 
