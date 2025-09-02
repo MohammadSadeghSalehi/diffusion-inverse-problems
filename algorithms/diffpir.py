@@ -21,7 +21,7 @@ def diffpir(
 
     timesteps = scheduler.timesteps
     if random_init:
-        x = torch.randn((y.shape[0], 3, y.shape[2], y.shape[3]), device=device)
+        x = torch.randn((A_pinv(y).shape[0], A_pinv(y).shape[1], A_pinv(y).shape[2], A_pinv(y).shape[3]), device=device)
     else:
         x0_init = A_pinv(y)
         # Add noise scaled to match the first timestep's sigma

@@ -20,7 +20,7 @@ def ddrm_ddim(
     
     # Start from pure noise with correct shape
     if x_shape is None:
-        x_shape = y.shape  # Fallback to y shape if not specified
+        x_shape = A_pinv(y).shape  # Fallback to y shape if not specified
     x = torch.randn(x_shape).to(device)
 
     for i, t in enumerate(tqdm(scheduler.timesteps)):
@@ -75,7 +75,7 @@ def ddrm_ddpm(
     
     # Start from pure noise with correct shape
     if x_shape is None:
-        x_shape = y.shape  # Fallback to y shape if not specified
+        x_shape = A_pinv(y).shape  # Fallback to y shape if not specified
     x = torch.randn(x_shape).to(device)
 
     for i, t in enumerate(tqdm(scheduler.timesteps)):
