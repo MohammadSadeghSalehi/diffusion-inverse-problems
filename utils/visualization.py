@@ -13,6 +13,8 @@ def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, met
         figsize (tuple): Figure size.
         cmap (str): Color map for grayscale.
     """
+    # set font size
+    plt.rcParams["font.size"] = 16
     num_images = len(images)
     if ncols is None:
         ncols = num_images
