@@ -28,7 +28,7 @@ This repository provides **implementations of state-of-the-art diffusion-based m
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/diffusion-inverse-problems.git
+git clone https://github.com/MohammadSadeghSalehi/diffusion-inverse-problems.git
 cd diffusion-inverse-problems
 
 # Install dependencies
@@ -68,7 +68,7 @@ diffusion-inverse-problems/
 │
 ├── physics/                # Forward model operators
 │   ├── inpainting.py       # Inpainting masks and operators
-│   ├── tomography.py       # CT/MRI reconstruction operators
+│   ├── tomography.py       # CT reconstruction operators
 │   ├── blur.py             # Blur kernels and deblurring
 │   └── __init__.py
 │
@@ -80,8 +80,7 @@ diffusion-inverse-problems/
 │
 ├── notebooks/              # Example notebooks and demos
 │   ├── demo_inpainting.ipynb
-│   ├── demo_ct.ipynb
-│   └── demo_deblurring.ipynb
+│   └── demo_tomography.ipynb
 │
 ├── requirements.txt        # Python dependencies
 ├── README.md
@@ -95,21 +94,92 @@ diffusion-inverse-problems/
 ### Basic Inpainting Example
 
 ```python
-from algorithms.repaint import RePaint
-from physics.inpainting import InpaintingOperator
-from utils.dataset import load_celeba_hq
+import torch
+import numpy as np
+from diffusers import DDPMPipeline
+import sys, os
 
-# Load pretrained diffusion model and dataset
-model = load_pretrained_model("celeba_hq_256")
-image = load_celeba_hq()[0]
+# Adding project root (parent of notebooks/) to Python path
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
-# Create inpainting mask and operator
-mask = create_random_mask(image.shape, mask_ratio=0.3)
-operator = InpaintingOperator(mask)
+# === Imports from Repo ===
+from algorithms.repaint import repaint
+from utils.dataset import get_pipeline_and_dataset
+from utils.degrade import degrade_dataloader
+from utils.visualization import show_images
+import deepinv as dinv
+from physics.inpainting import InpaintingProblem
 
-# Run RePaint algorithm
-repaint = RePaint(model, operator)
-restored_image = repaint.restore(image)
+torch.manual_seed(0)
+
+# === Device Selection ===
+device = torch.device(
+    "cuda" if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available()
+    else "cpu"
+)
+
+# === Load Pipeline and Dataset ===
+pipeline, dataloader = get_pipeline_and_dataset(
+    model_name="google/ddpm-celebahq-256",
+    dataset_name="BSDS500",   # options: "CT", "CelebA-HQ", ...
+    batch_size=1,
+    img_size=256,
+    subset_ratio=0.01,
+    device=device
+)
+
+# === Problem Selection ===
+problem = "inpainting"
+img_size = (3, 256, 256)
+noise_level = 0.0
+
+if problem == "inpainting":
+    mask = torch.ones(1, img_size[1], img_size[2])
+    mask[:, 32:64, 32:64] = 0  # Example: square mask
+    physics = InpaintingProblem(img_size=img_size, mask=mask, device=device)
+else:
+    raise ValueError(f"Unknown problem type: {problem}")
+
+# === Define Forward and Pseudo-inverse Operators ===
+A, A_pinv = physics.A, physics.A_dagger
+
+# === Corrupt Dataset ===
+noisy_dataloader = degrade_dataloader(dataloader, A, noise_std=noise_level, device=device)
+
+# === Load One Sample (clean + corrupted) ===
+sample_clean = next(iter(dataloader))
+clean_img = sample_clean["image"].to(device) if isinstance(sample_clean, dict) else sample_clean[0].to(device)
+
+sample_noisy = next(iter(noisy_dataloader))
+y = sample_noisy[0].to(device)
+
+# Save GT vs Corrupted for comparison
+show_images(
+    [(clean_img + 1) / 2, (y + 1) / 2],
+    titles=["Ground Truth", "Corrupted"],
+    save_path=os.path.join("results", f"{problem}_gt_corrupted.png")
+)
+
+# === Run RePaint ===
+print(f"Running reconstruction for {problem} with RePaint...")
+reconstructed_repaint = repaint(
+    pipeline=pipeline,
+    y=y,
+    A=A,
+    A_pinv=A_pinv,
+    sigma_n=noise_level,
+    num_inference_steps=250,
+    jump_length=10,
+    jump_n_sample=10,
+)
+
+# Save Result
+show_images(
+    [(clean_img + 1) / 2, (y + 1) / 2, (reconstructed_repaint + 1) / 2],
+    titles=["Ground Truth", "Corrupted", "RePaint Reconstruction"],
+    save_path=os.path.join("results", f"{problem}_reconstructed_repaint.png")
+)
 ```
 
 For complete examples, see the notebooks in `/notebooks/`.
@@ -128,16 +198,16 @@ For complete examples, see the notebooks in `/notebooks/`.
 
 ## 📋 Requirements
 
-- Python 3.8+
-- PyTorch 1.12+
-- CUDA 11.0+ (for GPU acceleration)
+- Python 3.9+
+- PyTorch 2.0+
+- CUDA 11.0+ (for GPU acceleration), MPS support for non-CT problems
 - Additional dependencies in `requirements.txt`
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [contribution guidelines](CONTRIBUTING.md) for details on how to:
+We welcome contributions and:
 
 - Report bugs and request features
 - Submit pull requests
@@ -196,7 +266,7 @@ We welcome contributions! Please see our [contribution guidelines](CONTRIBUTING.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
