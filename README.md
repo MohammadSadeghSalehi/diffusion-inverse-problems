@@ -2,6 +2,8 @@
 
 This repository provides **implementations of state-of-the-art diffusion-based methods for solving inverse problems** in imaging, including **DiffPIR, DPS, DDRM, and RePaint**.
 
+<img src="notebooks/inpainting_reconstructed_diffpir.png" alt="inpainted" width="200"> <img src="notebooks/inpainting_reconstructed_dps.png" alt="inpainted" width="200">
+
 ---
 
 ## ✨ Highlights
