@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 
 
-def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, metrics=None):
+def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, metrics=None, save_path=None):
     """
     Display list of images in a row.
 
@@ -44,7 +44,11 @@ def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, met
                     )
         plt.axis("off")
     plt.tight_layout()
-    plt.show()
+    if save_path:
+        plt.savefig(save_path, bbox_inches='tight', dpi=300)
+        plt.show()
+    else:
+        plt.show()
 
 
 def save_image_grid(images, path, ncols=None):
