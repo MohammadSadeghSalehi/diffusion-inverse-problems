@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 
 
-def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None):
+def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, metrics=None):
     """
     Display list of images in a row.
 
@@ -25,9 +25,21 @@ def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None):
             img = img.detach().cpu()
             if img.dim() == 3 and img.size(0) in [1, 3]:
                 img = img.permute(1, 2, 0)
+            elif img.dim() == 4:
+                img = img.squeeze(0).permute(1, 2, 0)
         plt.imshow(img, cmap=cmap)
         if titles:
             plt.title(titles[i])
+            if metrics:
+                m_dict = metrics[i] if isinstance(metrics, list) else metrics
+                for j, (metric_name, metric_value) in enumerate(m_dict.items()):
+                    plt.text(
+                        0.5, -0.1 - j * 0.08,
+                        f"{metric_name}: {metric_value:.2f}",
+                        ha="center", va="center",
+                        transform=plt.gca().transAxes,
+                        fontsize=9
+                    )
         plt.axis("off")
     plt.tight_layout()
     plt.show()
