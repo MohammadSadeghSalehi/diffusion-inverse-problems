@@ -40,7 +40,7 @@ def show_images(images, titles=None, ncols=None, figsize=(12, 4), cmap=None, met
                         f"{metric_name}: {metric_value:.2f}",
                         ha="center", va="center",
                         transform=plt.gca().transAxes,
-                        fontsize=9
+                        fontsize=14
                     )
         plt.axis("off")
     plt.tight_layout()
